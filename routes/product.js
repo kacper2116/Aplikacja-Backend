@@ -2,7 +2,7 @@ const router = require('express').Router()
 const Product = require('../models/Product')
 const DigitalKey = require('../models/DigitalKey')
 const Platform = require('../models/Platform')
-const Category = require('../models/Category')
+const Genre = require('../models/Genre')
 
 //CREATE
 
@@ -140,19 +140,28 @@ router.get('/search', async (req, res) => {
 //GET ALL PRODUCTS
 
 router.get('/', async (req, res) => {
-   
+ 
     try {
 
         const category = req.query.category
 
         if(category){
 
-            if(category === 'All Games'){
+            if(category === 'Wszystkie Gry'){
 
                 const products = await Product.find();
                 return res.status(200).json(products);
 
-            }else{
+            }else if (category === 'Najnowsze Gry'){
+                
+                const products = await Product.find().sort({'details.release_date': 1}).limit(10);
+                console.log(products)
+                return res.status(200).json(products);
+            }
+            
+            
+            
+            else{
 
            
             const products = await Product.find({ category: category });
@@ -248,10 +257,15 @@ router.get('/', async (req, res) => {
 
 router.get('/:param', async (req, res) => {
 
+   
+
     const param = req.params.param
 
     const platform = await Platform.find({name: param})
-    const category = await Category.find({name: param})
+    const genre = await Genre.find({name: param})
+
+
+    console.log(param)
 
     try {
 
@@ -265,7 +279,7 @@ router.get('/:param', async (req, res) => {
         let sortConditions = {}
         
         if(platform.length > 0)filterConditions.platforms = {$in: param}
-        else if (category.length > 0)filterConditions.tags = {$in: param}
+        else if (genre.length > 0)filterConditions.tags = {$in: param}
 
         else {
 
@@ -341,7 +355,7 @@ router.get('/:param', async (req, res) => {
        
     } catch (error) {
 
-        return res.status(500).json({ message: 'Internal server error' })
+        return res.status(500).json({ message: 'Błąd serwera' })
     }
 
 })

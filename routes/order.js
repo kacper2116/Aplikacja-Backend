@@ -116,7 +116,14 @@ router.get('/:userId', authenticateToken, async (req, res) => {
             .sort({ createdAt: 'desc' })
             .exec();
 
-        return res.status(200).json({ orders })
+        
+        if(orders.length < 1){
+            return res.status(200).json({ message:"Brak dostępnych zamówień"})
+        }
+
+        return res.status(200).json({orders})
+
+        
 
 
     } catch (err) {

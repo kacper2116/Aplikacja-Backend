@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
     const username = req.body.username
     const password = req.body.password
 
-   
+
     try {
 
         const existingUserEmail = await User.findOne({ email })
@@ -25,30 +25,27 @@ router.post('/register', async (req, res) => {
 
 
         if (existingUserEmail) {
-            console.log("this email exists")
-            return res.status(409).json({ message: 'This email is already registered' })
+        
+            return res.status(409).json({ message: 'Ten adres email jest już zajęty' })
         }
 
         if (existingUserLogin) {
-            console.log("this login exists")
-            return res.status(409).json({ message: 'This login is already registered' })
+         
+            return res.status(409).json({ message: 'Ten login jest już zajęty' })
         }
 
-     
-       const hashedPassword = await bcrypt.hash(password, saltRounds);
-       console.log("eeee")
 
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-            const newUser = new User({
-                username: username,
-                email: email,
-                password: hashedPassword
+        const newUser = new User({
+            username: username,
+            email: email,
+            password: hashedPassword
 
-            })
+        })
 
-
-            await newUser.save()
-            return res.status(201).json({ message: 'Successfully registered' })
+        await newUser.save()
+        return res.status(201).json({ message: 'Pomyślnie zarejestrowano użytkownika' })
 
     } catch (error) {
         return res.status(500).json(error)
@@ -65,32 +62,29 @@ router.post('/login', async (req, res) => {
         const username = req.body.username
         const password = req.body.password
 
-       
-        const user = await User.findOne({ username })
-        
+        const user = await User.findOne({ username: username })
 
-        if (!user) {
-            return res.status(401).json({ message: 'Wrong username!' })
+        if (user) {
+
+            const isPasswordCorrect = await user.comparePassword(password)
+
+            if (!isPasswordCorrect) {
+                return res.status(401).json({ message: 'Nieprawidłowy login i/lub hasło' });
+
+            }
+
+            const token = generateToken(user);
+            const decodedToken = jwt.decode(token);
+
+            return res.status(201).json({ token: token, username: decodedToken.username });
+
+        } else {
+            return res.status(401).json({ message: 'Nieprawidłowy login i/lub hasło' });
         }
-
-
-        const isMatch = await user.comparePassword(password)
-      
-
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Wrong username or password!' });
-
-        }
-
-        const token = generateToken(user);
-        const decodedToken = jwt.decode(token);
-
-        console.log(decodedToken.sub)
-        return res.status(201).json({ token: token, username:decodedToken.username });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Błąd serwera' });
     }
 
 })

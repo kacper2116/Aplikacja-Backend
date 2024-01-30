@@ -15,7 +15,8 @@ const orderRoute = require('./routes/order')
 const cartRoute = require('./routes/cart')
 const stripeRoute = require('./routes/stripe')
 const platformRoute = require('./routes/platform')
-const categoryRoute = require('./routes/category')
+const genreRoute = require('./routes/genre')
+const languageRoute = require('./routes/language')
 
 const generateKeys = require('./generateKeys');
 const Product = require('./models/Product')
@@ -44,7 +45,8 @@ app.use('/api/orders', orderRoute)
 app.use('/api/carts', cartRoute)
 app.use('/api/checkout', stripeRoute)
 app.use('/api/platforms', platformRoute)
-app.use('/api/categories', categoryRoute)
+app.use('/api/genres', genreRoute)
+app.use('/api/languages', languageRoute)
 
 app.use(passport.initialize());
 
@@ -63,7 +65,7 @@ const newProduct = new Product({
     title: "Witcher 3",
     coverImg: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Witcher_3_cover_art.jpg',
     wideImg: 'https://gaming-cdn.com/images/products/268/orig/the-witcher-3-wild-hunt-pc-game-gog-com-cover.jpg?v=1698413872',
-    price: 25.00,
+    price: 59.99,
     publisher: "publisher",
     tags: ["MMORPG", "Multiplayer", "Action"],
     platforms: ["PC"],

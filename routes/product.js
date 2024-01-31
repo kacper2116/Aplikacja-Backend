@@ -77,7 +77,6 @@ router.get('/find/:id', async (req, res) => {
             return total;
         }, {});
 
-        //const availability = Object.keys(availablePlatforms).length > 0 ? true: false;
     
         const productData = {
             product: product,
@@ -154,8 +153,8 @@ router.get('/', async (req, res) => {
 
             }else if (category === 'Najnowsze Gry'){
                 
-                const products = await Product.find().sort({'details.release_date': 1}).limit(10);
-                console.log(products)
+                const products = await Product.find().sort({'details.release_date': -1}).limit(10);
+       
                 return res.status(200).json(products);
             }
             
@@ -225,8 +224,8 @@ router.get('/', async (req, res) => {
                     case 'Price descending': sortConditions = { price: -1 }; break;
                     case 'Name A-Z': sortConditions = { title: 1 }; break;
                     case 'Name Z-A': sortConditions = { title: -1 }; break;
-                    case 'Newest': sortConditions = { 'details.release_date': 1 }; break;
-                    case 'Oldest': sortConditions = { 'details.release_date': -1 }; break;
+                    case 'Newest': sortConditions = { 'details.release_date': -1 }; break;
+                    case 'Oldest': sortConditions = { 'details.release_date': 1 }; break;
                     default: sortConditions = {}
                 }
             }

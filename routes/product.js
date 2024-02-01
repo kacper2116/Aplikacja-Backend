@@ -63,8 +63,8 @@ router.get('/find/:id', async (req, res) => {
 
         const product = await Product.findById(req.params.id)
 
-        const productKeys = await DigitalKey.find({ gameId: product._id })
-
+        const productKeys = await DigitalKey.find({ gameId: product._id,  orderId: { $exists: false }})
+       
         const availablePlatforms = productKeys.reduce((total, key) => {
             const platform = key.platform;
 
@@ -77,7 +77,7 @@ router.get('/find/:id', async (req, res) => {
             return total;
         }, {});
 
-    
+        
         const productData = {
             product: product,
             availablePlatforms: availablePlatforms,
@@ -146,15 +146,15 @@ router.get('/', async (req, res) => {
 
         if(category){
 
-            if(category === 'Wszystkie Gry'){
+            if(category === 'All Games'){
 
                 const products = await Product.find();
                 return res.status(200).json(products);
 
-            }else if (category === 'Najnowsze Gry'){
+            }else if (category === 'Latest Games'){
                 
                 const products = await Product.find().sort({'details.release_date': -1}).limit(10);
-       
+                
                 return res.status(200).json(products);
             }
             
@@ -254,17 +254,13 @@ router.get('/', async (req, res) => {
 }
 )
 
-router.get('/:param', async (req, res) => {
 
-   
+router.get('/:param', async (req, res) => {
 
     const param = req.params.param
 
     const platform = await Platform.find({name: param})
     const genre = await Genre.find({name: param})
-
-
-    console.log(param)
 
     try {
 
@@ -276,13 +272,16 @@ router.get('/:param', async (req, res) => {
 
         const filterConditions = {}
         let sortConditions = {}
-        
+
+    
+    
         if(platform.length > 0)filterConditions.platforms = {$in: param}
         else if (genre.length > 0)filterConditions.tags = {$in: param}
 
         else {
 
-            if(param !== 'All Games')filterConditions.category = {$in: param}
+            if(param === 'All Games') console.log('all games')
+            else if(param === 'Latest Games')sortConditions = { 'details.release_date': -1 }
          
         }
     
@@ -368,6 +367,7 @@ router.get('/:gameId/:platform/quantity', async (req, res) => {
         const gameId = req.params.gameId
         const platform = req.params.platform
 
+        
         const numberOfKeys = await DigitalKey.countDocuments({ gameId, platform, orderId:{$exists: false}, received:false});
         console.log(numberOfKeys)
 

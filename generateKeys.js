@@ -31,7 +31,7 @@ const generateKeys = async () => {
         return keys;
     }
 
-    const generatedKeys = generateRandomKeys(20);
+    const generatedKeys = generateRandomKeys(10);
 
     const games = await Product.find()
 
@@ -41,26 +41,24 @@ const generateKeys = async () => {
         gamesId.push(game._id)
     })
 
+    gamesId.forEach(gameId => {
 
-    for(let i=0;i<5;i++){
+        for(let i=0;i<5;i++){
 
-        const newKey = new DigitalKey({
-            gameId: gamesId[0],
-            platform: 'PS5',
-            key: generatedKeys[i]
-
-        })
-
-        console.log(newKey)
-
-        await newKey.save()
-
-    }
+            const newKey = new DigitalKey({
+                gameId: gameId,
+                platform: 'PS5',
+                key: generatedKeys[i]
     
+            })
     
+             newKey.save()
     
+        }
+        
+    })
 
-
+   
 }
 
 

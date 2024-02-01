@@ -37,11 +37,11 @@ router.post("/payment", async (req, res) => {
 
   const { products } = req.body;
 
-  // Create a PaymentIntent with the order amount and currency
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: await calculateOrderAmount(products),
     currency: "pln",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+    
     automatic_payment_methods: {
       enabled: true,
     },
@@ -58,8 +58,12 @@ router.post('/', authenticateToken, async (req, res) => {
 
   try {
 
+   
+
     const { paymentIntentId, products } = req.body;
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if(!paymentIntent)return res.status(500).json({message:'Nie znaleziono identyfikatora płatności'})
 
     if (paymentIntent.status === 'succeeded') {
 
@@ -95,11 +99,6 @@ router.post('/', authenticateToken, async (req, res) => {
             key: null,
             received:false,
           };
-
-
-          console.log(newProduct)
-
-
 
 
           // Pobierz odpowiednią ilość kluczy z DigitalKeySchema dla danej gry i platformy
@@ -193,9 +192,8 @@ router.post('/', authenticateToken, async (req, res) => {
 
       const savedOrder = await newOrder.save()
 
-      res.status(201).json({ success: true })
-    } else console.log("payment failure")
-
+      return res.status(201).json({ success: true })
+    } else return res.status(201).json({success:false})
   } catch (error) {
     console.error(error)
 
@@ -334,8 +332,7 @@ router.post('/guest', async (req, res) => {
       const savedOrder = await newOrder.save()
 
       res.status(201).json({ success: true })
-    } else console.log("payment failure")
-
+    } else return res.status(201).json({success:false})
   } catch (error) {
     console.error(error)
 

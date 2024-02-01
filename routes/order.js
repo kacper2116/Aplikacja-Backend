@@ -22,26 +22,26 @@ router.post('/', async (req, res) => {
 
 router.post('/create-order', async (req, res) => {
     try {
-        const { transactionId, amount, /* inne dane od Stripe */ } = req.body;
+        const { transactionId, amount,} = req.body;
 
-        // Sprawdź, czy zamówienie o danym identyfikatorze transakcji już istnieje
+        
         const existingOrder = await Order.findOne({ transactionId });
 
         if (existingOrder) {
             return res.status(400).json({ error: 'Zamówienie już istnieje.' });
         }
 
-        // Utwórz nowe zamówienie
+       
         const newOrder = new Order({
             transactionId,
             amount,
-            // Dodaj inne dane zamówienia
+           
         });
 
-        // Zapisz nowe zamówienie w bazie danych
+       
         await newOrder.save();
 
-        // Zwróć potwierdzenie utworzenia zamówienia
+     
         res.status(201).json({ message: 'Zamówienie utworzone pomyślnie.' });
     } catch (error) {
         console.error(error);

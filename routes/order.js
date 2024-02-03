@@ -4,7 +4,7 @@ const Order = require('../models/Order')
 const { authenticateToken } = require('./authMiddleware')
 
 
-//CREATE ORDER
+//Tworzenie zamówienia
 
 router.post('/', async (req, res) => {
 
@@ -51,7 +51,7 @@ router.post('/create-order', async (req, res) => {
 
 
 
-//UPDATE ORDER
+//Aktualizacja zamówienia
 
 router.put('/:id', async (req, res) => {
 
@@ -72,7 +72,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-//DELETE ORDER
+//Usuwanie zamówienia
 
 router.delete('/"id', async (req, res) => {
     try {
@@ -86,7 +86,7 @@ router.delete('/"id', async (req, res) => {
     }
 })
 
-//Get All orders
+//Pozyskanie wszystkich zamówień
 router.get('/', async (req, res) => {
 
 
@@ -104,7 +104,7 @@ router.get('/', async (req, res) => {
 })
 
 
-// //GET USER ORDERS
+// Pozyskanie zamówień użytkownika
 
 router.get('/:userId', authenticateToken, async (req, res) => {
 
@@ -132,7 +132,7 @@ router.get('/:userId', authenticateToken, async (req, res) => {
     }
 })
 
-// //GET USER SINGLE ORDER
+// Pozyskanie pojedynczego zamówienia
 router.get('/order/:orderId', authenticateToken, async (req, res) => {
 
 

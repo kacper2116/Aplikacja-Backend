@@ -3,7 +3,7 @@ const User = require('../models/User')
 
 
 
-//UPDATE USER
+//Aktualizacja użytkownika
 
 router.put('/:id', async (req, res) => {
 
@@ -29,7 +29,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-//DELETE USER
+//Usuwanie użytkownika po id
 
 router.delete('/"id', async (req, res) => {
     try {
@@ -60,7 +60,7 @@ router.get('/find/:id', async (req, res) => {
     }
 })
 
-//GET ALL USERS
+//Pozyskanie wszystkich użytkowników
 
 router.get('/', async (req, res) => {
 
@@ -78,38 +78,6 @@ router.get('/', async (req, res) => {
     }
 })
 
-
-//GET USER STATS    
-router.get('/stats', async (req, res) => {
-
-    const date = new Date()
-    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1))
-
-    try {
-
-        const data = await User.aggregate([
-            { $match: { createdAt: { $gte: lastYear } } },
-            {
-                $project: {
-                    month: { $month: '$createdAt' }
-                },
-            },
-
-            {
-                $group: {
-                    _id: '$month',
-                    total: { $sum: 1 },
-                }
-            }
-        ])
-
-        return res.status(200).json(data)
-
-    } catch (error) {
-        return res.status(500).json(error)
-    }
-
-})
 
 
 module.exports = router

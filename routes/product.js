@@ -4,7 +4,7 @@ const DigitalKey = require('../models/DigitalKey')
 const Platform = require('../models/Platform')
 const Genre = require('../models/Genre')
 
-//CREATE
+//Dodawanie produktu
 
 router.post('/', async (req, res) => {
 
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 })
 
 
-//UPDATE PRODUCT
+//Aktualizacja produktu
 
 router.put('/:id', async (req, res) => {
 
@@ -42,7 +42,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-//DELETE PRODUCT
+//Usuwanie produktu
 
 router.delete('/"id', async (req, res) => {
     try {
@@ -56,7 +56,7 @@ router.delete('/"id', async (req, res) => {
     }
 })
 
-// //GET PRODUCT BY ID
+//Pozyskiwanie produktu po id
 
 router.get('/find/:id', async (req, res) => {
     try {
@@ -91,7 +91,7 @@ router.get('/find/:id', async (req, res) => {
     }
 })
 
-// //GET PRODUCT BY NAME
+// Pozyskiwanie produktu po nazwie
 
 router.get('/find/:name', async (req, res) => {
     try {
@@ -108,7 +108,7 @@ router.get('/find/:name', async (req, res) => {
 })
 
 
-//GET PRODUCT FROM SEARCH   
+//Pozyskiwanie produktu z wyszukiwarki   
 
 router.get('/search', async (req, res) => {
 
@@ -136,7 +136,7 @@ router.get('/search', async (req, res) => {
 
 
 
-//GET ALL PRODUCTS
+//Pozyskanie wszystkich produktów
 
 router.get('/', async (req, res) => {
  

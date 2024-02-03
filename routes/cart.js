@@ -2,7 +2,7 @@ const router = require('express').Router()
 const Cart = require("../models/Cart");
 
 
-//CREATE CART
+//Tworzenie koszyka
 
 router.post("/cart", async (req, res) => {
     const newCart = new Cart(req.body);
@@ -15,7 +15,7 @@ router.post("/cart", async (req, res) => {
     }
 });
 
-//UPDATE CART
+//Aktualizacja koszyka
 
 router.put("/cart:id", async (req, res) => {
     try {
@@ -32,7 +32,7 @@ router.put("/cart:id", async (req, res) => {
     }
 });
 
-//DELETE
+//Usuwanie koszyka
 router.delete("/cart:id", async (req, res) => {
     try {
         await Cart.findByIdAndDelete(req.params.id);
@@ -42,7 +42,7 @@ router.delete("/cart:id", async (req, res) => {
     }
 });
 
-//GET USER CART
+//Pobranie koszyka użytkownika
 router.get("/find/:userId", async (req, res) => {
     try {
         const cart = await Cart.findOne({ userId: req.params.userId });
@@ -52,7 +52,7 @@ router.get("/find/:userId", async (req, res) => {
     }
 });
 
-// //GET ALL
+// //Pobranie wszystkich ksozyków
 
 router.get("/", async (req, res) => {
     try {

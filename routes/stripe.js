@@ -86,12 +86,14 @@ router.post('/', authenticateToken, async (req, res) => {
 
         const productPrice = (await Product.findById(product._id)).price
         const productPublisher = (await Product.findById(product._id)).publisher
+        const productImg = (await Product.findById(product._id)).coverImg
 
-
+      
 
         for (let i = 0; i < product.quantity; i++) {
           const newProduct = {
             _id: new mongoose.Types.ObjectId(),
+            coverImg: productImg,
             title: product.title,
             publisher: productPublisher,
             platform: product.selectedPlatform,
@@ -100,24 +102,26 @@ router.post('/', authenticateToken, async (req, res) => {
             received:false,
           };
 
+       
 
-          // Pobierz odpowiednią ilość kluczy z DigitalKeySchema dla danej gry i platformy
+
+         
           const digitalKey = await DigitalKey.findOne({
             gameId: product._id,
             platform: product.selectedPlatform,
             orderId: { $exists: false },
           });
 
-          // Sprawdź czy znaleziono wystarczającą ilość kluczy
+       
           if (!digitalKey) {
             return res.status(400).json({ error: 'Brak dostępnych kluczy dla tego produktu.' });
           }
 
-          // Dodaj klucze do zamówienia
+          
           newProduct.key = digitalKey.key;
 
 
-          console.log(newProduct._id)
+         
 
           await DigitalKey.updateOne(
             { _id: digitalKey._id },
@@ -127,7 +131,7 @@ router.post('/', authenticateToken, async (req, res) => {
             }
           );
 
-          // Dodaj produkt do zamówienia
+          
 
           newOrder.products.push(newProduct);
 

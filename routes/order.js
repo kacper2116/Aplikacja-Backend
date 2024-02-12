@@ -4,54 +4,7 @@ const Order = require('../models/Order')
 const { authenticateToken } = require('./authMiddleware')
 
 
-//CREATE ORDER
-
-router.post('/', async (req, res) => {
-
-    console.log(req.body)
-
-    try {
-        return res.status(200).json()
-
-    } catch (error) {
-        return res.status(500).json(error)
-    }
-})
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
-router.post('/create-order', async (req, res) => {
-    try {
-        const { transactionId, amount,} = req.body;
-
-        
-        const existingOrder = await Order.findOne({ transactionId });
-
-        if (existingOrder) {
-            return res.status(400).json({ error: 'Zamówienie już istnieje.' });
-        }
-
-       
-        const newOrder = new Order({
-            transactionId,
-            amount,
-           
-        });
-
-       
-        await newOrder.save();
-
-     
-        res.status(201).json({ message: 'Zamówienie utworzone pomyślnie.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Wystąpił błąd serwera.' });
-    }
-})
-
-
-
-//UPDATE ORDER
+//Aktualizacja zamówienia
 
 router.put('/:id', async (req, res) => {
 
@@ -72,13 +25,13 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-//DELETE ORDER
+//Usuwanie zamówienia
 
 router.delete('/"id', async (req, res) => {
     try {
 
         await Order.findByIdAndDelete(req.params.id)
-        return res.status(200).json('Order has been deleted')
+        return res.status(200).json('Zamówienie zostało usunięte')
 
     } catch (err) {
 
@@ -86,7 +39,7 @@ router.delete('/"id', async (req, res) => {
     }
 })
 
-//Get All orders
+//Pobieranie wszystkich zamówień
 router.get('/', async (req, res) => {
 
 
@@ -104,7 +57,7 @@ router.get('/', async (req, res) => {
 })
 
 
-// //GET USER ORDERS
+// Pobieranie zamówień użytkownika o wskazanym id 
 
 router.get('/:userId', authenticateToken, async (req, res) => {
 
@@ -132,25 +85,24 @@ router.get('/:userId', authenticateToken, async (req, res) => {
     }
 })
 
-// //GET USER SINGLE ORDER
+// Pobieranie pojedynczego zamówienia o wskazanym id
+
 router.get('/order/:orderId', authenticateToken, async (req, res) => {
-
-
 
     try {
 
         const orderId = req.params.orderId
         const order = await Order.findById(orderId)
 
-
         return res.status(201).json(order)
-
 
     } catch (error) {
         return res.status(404)
     }
 
 })
+
+//Pobieranie klucza przypisanego do produktu w zamówieniu
 
 router.post('/order/:orderId/receive/:productId',authenticateToken, async (req, res) => {
 
@@ -168,7 +120,6 @@ router.post('/order/:orderId/receive/:productId',authenticateToken, async (req, 
         const productId = req.params.productId
         const product = order.products.find(product => product._id.toString() === productId);
 
-        console.log("ereeeeeeeeee")
         if (product.received === false){
            
             product.received = true

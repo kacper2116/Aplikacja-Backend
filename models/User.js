@@ -15,8 +15,8 @@ const UserSchema = new mongoose.Schema(
     {timestamps: true}
 )
 
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.password);
+UserSchema.methods.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
   };
 
 const GuestSchema = new mongoose.Schema(

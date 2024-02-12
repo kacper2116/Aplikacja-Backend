@@ -2,6 +2,8 @@ const router = require('express').Router()
 const Platform = require('../models/Platform')
 
 
+//Pobieranie platform 
+
 router.get('/', async (req, res) => {
 
     try {

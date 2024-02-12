@@ -2,9 +2,8 @@ const router = require('express').Router()
 const Genre = require('../models/Genre')
 
 
+//Endpoint służący do pobierania gatunków gier
 router.get('/', async (req, res) => {
-
-    console.log('dsadass')
 
     try {
 

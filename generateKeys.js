@@ -1,16 +1,17 @@
 const DigitalKey = require('./models/DigitalKey')
 const Product = require('./models/Product')
 
-const generateKeys = async () => {
+//Skrypt pomocniczy do generowania kluczy
 
+const generateKeys = async () => {
 
     function generateRandomKey(length) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let key = '';
 
         for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            key += characters.charAt(randomIndex);
+            const index = Math.floor(Math.random() * characters.length);
+            key += characters.charAt(index);
 
             if ((i + 1) % 5 === 0 && i !== length - 1) {
                 key += '-';
@@ -57,8 +58,7 @@ const generateKeys = async () => {
         }
         
     })
-
-   
+ 
 }
 
 

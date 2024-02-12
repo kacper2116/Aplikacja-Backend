@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+//Funkcja generująca tonek jwt
 function generateToken(user) {
   const payload = {
     sub: user._id,
@@ -14,6 +15,7 @@ function generateToken(user) {
   return jwt.sign(payload, 'secret-key', options);
 }
 
+//Funkcja potwierdzająca poprawnośc tokenu jwt
 function authenticateToken(req, res, next) {
 
   const token = req.header("Authorization")?.split(" ")[1];  

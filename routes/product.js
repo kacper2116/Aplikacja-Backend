@@ -4,59 +4,8 @@ const DigitalKey = require('../models/DigitalKey')
 const Platform = require('../models/Platform')
 const Genre = require('../models/Genre')
 
-//CREATE
 
-router.post('/', async (req, res) => {
-
-    const newProduct = new Product(req.body)
-
-    try {
-
-        const savedProduct = await newProduct.save()
-        return res.status(200).json(savedProduct)
-
-    } catch (error) {
-        return res.status(500).json(error)
-    }
-})
-
-
-//UPDATE PRODUCT
-
-router.put('/:id', async (req, res) => {
-
-    try {
-
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
-
-            $set: req.body,
-
-        }, { new: true })
-
-        return res.status(200).json(updatedProduct)
-
-    } catch (err) {
-
-        return res.status(500).json(err)
-
-    }
-})
-
-//DELETE PRODUCT
-
-router.delete('/"id', async (req, res) => {
-    try {
-
-        await Product.findByIdAndDelete(req.params.id)
-        return res.status(200).json('Product has been deleted')
-
-    } catch (err) {
-
-        return res.status(500).json(err)
-    }
-})
-
-// //GET PRODUCT BY ID
+// //Pobieranie produktu po id
 
 router.get('/find/:id', async (req, res) => {
     try {
@@ -68,16 +17,19 @@ router.get('/find/:id', async (req, res) => {
         const availablePlatforms = productKeys.reduce((total, key) => {
             const platform = key.platform;
 
+            if(product.platforms.includes(platform)){
+
             if (total.hasOwnProperty(platform)) {
                 total[platform]++;
             } else {
                 total[platform] = 1;
             }
+        }
 
             return total;
         }, {});
 
-        
+
         const productData = {
             product: product,
             availablePlatforms: availablePlatforms,
@@ -91,29 +43,11 @@ router.get('/find/:id', async (req, res) => {
     }
 })
 
-// //GET PRODUCT BY NAME
-
-router.get('/find/:name', async (req, res) => {
-    try {
-
-        const product = await Product.findOne({ title: req.params.name })
-
-        return res.status(200).json(product)
-
-
-    } catch (err) {
-
-        return res.status(500).json(err)
-    }
-})
-
-
-//GET PRODUCT FROM SEARCH   
+//Pobieranie produktu z wyszukiwarki   
 
 router.get('/search', async (req, res) => {
 
     const { query } = req.query
-
 
     try {
         const results = await Product.find({ title: { $regex: query, $options: 'i' } })
@@ -124,22 +58,22 @@ router.get('/search', async (req, res) => {
 
         } else {
 
-            res.status(404).json({ message: 'Products not found' })
+            res.status(404).json({ message: 'Nie znaleziono produktu o podanej frazie' })
         }
 
     } catch (error) {
 
-        return res.status(500).json({ message: 'Internal server error' })
+        return res.status(500).json({ message: 'Błąd serwera' })
     }
 
 })
 
 
 
-//GET ALL PRODUCTS
+//Pozyskanie produktów
 
 router.get('/', async (req, res) => {
- 
+    
     try {
 
         const category = req.query.category
@@ -158,11 +92,8 @@ router.get('/', async (req, res) => {
                 return res.status(200).json(products);
             }
             
-            
-            
             else{
 
-           
             const products = await Product.find({ category: category });
             return res.status(200).json(products);
 
@@ -254,8 +185,9 @@ router.get('/', async (req, res) => {
 }
 )
 
-
+//Pozyskanie produktów z konkretnego gatunku lub platformy
 router.get('/:param', async (req, res) => {
+   
 
     const param = req.params.param
 
@@ -364,22 +296,47 @@ router.get('/:param', async (req, res) => {
 router.get('/:gameId/:platform/quantity', async (req, res) => {
 
     try {
+       
         const gameId = req.params.gameId
         const platform = req.params.platform
+      
 
+            const numberOfKeys = await DigitalKey.countDocuments({ gameId, platform, orderId:{$exists: false}, received:false});
+            console.log(numberOfKeys)
+    
+            return res.status(200).json(numberOfKeys)
         
-        const numberOfKeys = await DigitalKey.countDocuments({ gameId, platform, orderId:{$exists: false}, received:false});
-        console.log(numberOfKeys)
-
-        return res.status(200).json(numberOfKeys)
 
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' })
+        return res.status(500).json({ message: 'Błąd serwera' })
     }
 
 
 
 })
+
+
+//Sprawdzenie ceny produkty
+
+router.get('/:gameId/price', async (req, res) => {
+
+    try {
+        const gameId = req.params.gameId
+        
+        const product = await Product.findById(gameId)
+        const price = product.price
+   
+
+        return res.status(200).json(price)
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Błąd serwera' })
+    }
+
+
+
+})
+
 
 
 

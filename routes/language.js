@@ -1,10 +1,8 @@
 const router = require('express').Router()
 const Language = require('../models/Language')
 
-
+//Endpoint służący do pobierania języków
 router.get('/', async (req, res) => {
-
-    console.log('dsadass')
 
     try {
 

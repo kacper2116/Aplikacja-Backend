@@ -8,6 +8,8 @@ const { authenticateToken } = require('./authMiddleware')
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
+//Funkcja sprawdzająca wartość zamówienia
+
 const calculateOrderAmount = async (products) => {
 
   let totalPrice = 0;
@@ -33,6 +35,8 @@ const calculateOrderAmount = async (products) => {
 
 };
 
+//Tworzenie intencji płatności stripe
+
 router.post("/payment", async (req, res) => {
 
   const { products } = req.body;
@@ -53,12 +57,10 @@ router.post("/payment", async (req, res) => {
 });
 
 
-
+//Potwierdzanie płatności i tworzenie zamówienia
 router.post('/', authenticateToken, async (req, res) => {
 
   try {
-
-   
 
     const { paymentIntentId, products } = req.body;
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -72,14 +74,11 @@ router.post('/', authenticateToken, async (req, res) => {
 
       const userId = req.user.sub
 
-
-
       const newOrder = new Order();
 
       newOrder.userInfo = {
         userId: userId
       }
-
 
       for (const product of products) {
 
@@ -88,8 +87,7 @@ router.post('/', authenticateToken, async (req, res) => {
         const productPublisher = (await Product.findById(product._id)).publisher
         const productImg = (await Product.findById(product._id)).coverImg
 
-      
-
+    
         for (let i = 0; i < product.quantity; i++) {
           const newProduct = {
             _id: new mongoose.Types.ObjectId(),
@@ -101,9 +99,6 @@ router.post('/', authenticateToken, async (req, res) => {
             key: null,
             received:false,
           };
-
-       
-
 
          
           const digitalKey = await DigitalKey.findOne({
@@ -120,9 +115,6 @@ router.post('/', authenticateToken, async (req, res) => {
           
           newProduct.key = digitalKey.key;
 
-
-         
-
           await DigitalKey.updateOne(
             { _id: digitalKey._id },
             {
@@ -131,14 +123,15 @@ router.post('/', authenticateToken, async (req, res) => {
             }
           );
 
-          
-
+    
           newOrder.products.push(newProduct);
 
         }
 
       }
 
+
+      //Pobieranie ceny produktu
 
       const getProductPrice = async (productId) => {
         try {
@@ -156,8 +149,11 @@ router.post('/', authenticateToken, async (req, res) => {
           throw error;
         }
       };
+      
 
-      const calculateTotalQuantity = async (products) => {
+      //Sprawdzenie ilości produktów w zamówieniu
+
+      const getTotalQuantity = async (products) => {
         try {
           const totalQuantity = await products.reduce(async (quantityPromise, product) => {
             const currentQuantity = await quantityPromise;
@@ -171,8 +167,9 @@ router.post('/', authenticateToken, async (req, res) => {
         }
       };
 
+      //Sprawdzanie wartości zamówienia
 
-      const calculateOrderValue = async (products) => {
+      const getOrdervalue = async (products) => {
         try {
           const orderValue = await products.reduce(async (valuePromise, product) => {
             const currentValue = await valuePromise;
@@ -186,8 +183,8 @@ router.post('/', authenticateToken, async (req, res) => {
           throw error;
         }
       };
-      const orderQuantity = await calculateTotalQuantity(products);
-      const orderValue = await calculateOrderValue(products);
+      const orderQuantity = await getTotalQuantity(products);
+      const orderValue = await getOrdervalue(products);
 
       newOrder.paymentMethod = paymentMethod;
       newOrder.currency = paymentIntent.currency;
@@ -208,6 +205,7 @@ router.post('/', authenticateToken, async (req, res) => {
 })
 
 //////////////////////////////////////////////////////
+//Obsługa płatności w przypadku gościa
 
 router.post('/guest', async (req, res) => {
 
@@ -270,8 +268,7 @@ router.post('/guest', async (req, res) => {
             }
           );
 
-          // Dodaj produkt do zamówienia
-
+    
           newOrder.products.push(newProduct);
 
         }
@@ -343,8 +340,6 @@ router.post('/guest', async (req, res) => {
     return res.status(500).json({ success: false, paymentStatus: "error" });
 
   }
-
-
 
 })
 

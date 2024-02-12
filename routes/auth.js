@@ -3,7 +3,6 @@ const User = require('../models/User')
 const CryptoJS = require('crypto-js')
 const jwt = require('jsonwebtoken');
 
-const passport = require('../passport');
 const { generateToken, authenticateToken } = require('./authMiddleware');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
@@ -51,7 +50,7 @@ router.post('/register', async (req, res) => {
         return res.status(500).json(error)
     }
 
-})
+})  
 
 
 //Logowanie

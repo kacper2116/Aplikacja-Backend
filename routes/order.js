@@ -4,6 +4,56 @@ const Order = require('../models/Order')
 const { authenticateToken } = require('./authMiddleware')
 
 
+<<<<<<< HEAD
+=======
+//Tworzenie zamówienia
+
+router.post('/', async (req, res) => {
+
+    console.log(req.body)
+
+    try {
+        return res.status(200).json()
+
+    } catch (error) {
+        return res.status(500).json(error)
+    }
+})
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+router.post('/create-order', async (req, res) => {
+    try {
+        const { transactionId, amount,} = req.body;
+
+        
+        const existingOrder = await Order.findOne({ transactionId });
+
+        if (existingOrder) {
+            return res.status(400).json({ error: 'Zamówienie już istnieje.' });
+        }
+
+       
+        const newOrder = new Order({
+            transactionId,
+            amount,
+           
+        });
+
+       
+        await newOrder.save();
+
+     
+        res.status(201).json({ message: 'Zamówienie utworzone pomyślnie.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Wystąpił błąd serwera.' });
+    }
+})
+
+
+
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 //Aktualizacja zamówienia
 
 router.put('/:id', async (req, res) => {
@@ -39,7 +89,11 @@ router.delete('/"id', async (req, res) => {
     }
 })
 
+<<<<<<< HEAD
 //Pobieranie wszystkich zamówień
+=======
+//Pozyskanie wszystkich zamówień
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 router.get('/', async (req, res) => {
 
 
@@ -57,7 +111,11 @@ router.get('/', async (req, res) => {
 })
 
 
+<<<<<<< HEAD
 // Pobieranie zamówień użytkownika o wskazanym id 
+=======
+// Pozyskanie zamówień użytkownika
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 
 router.get('/:userId', authenticateToken, async (req, res) => {
 
@@ -85,8 +143,12 @@ router.get('/:userId', authenticateToken, async (req, res) => {
     }
 })
 
+<<<<<<< HEAD
 // Pobieranie pojedynczego zamówienia o wskazanym id
 
+=======
+// Pozyskanie pojedynczego zamówienia
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 router.get('/order/:orderId', authenticateToken, async (req, res) => {
 
     try {

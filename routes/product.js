@@ -4,8 +4,64 @@ const DigitalKey = require('../models/DigitalKey')
 const Platform = require('../models/Platform')
 const Genre = require('../models/Genre')
 
+<<<<<<< HEAD
 
 // //Pobieranie produktu po id
+=======
+//Dodawanie produktu
+
+router.post('/', async (req, res) => {
+
+    const newProduct = new Product(req.body)
+
+    try {
+
+        const savedProduct = await newProduct.save()
+        return res.status(200).json(savedProduct)
+
+    } catch (error) {
+        return res.status(500).json(error)
+    }
+})
+
+
+//Aktualizacja produktu
+
+router.put('/:id', async (req, res) => {
+
+    try {
+
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
+
+            $set: req.body,
+
+        }, { new: true })
+
+        return res.status(200).json(updatedProduct)
+
+    } catch (err) {
+
+        return res.status(500).json(err)
+
+    }
+})
+
+//Usuwanie produktu
+
+router.delete('/"id', async (req, res) => {
+    try {
+
+        await Product.findByIdAndDelete(req.params.id)
+        return res.status(200).json('Product has been deleted')
+
+    } catch (err) {
+
+        return res.status(500).json(err)
+    }
+})
+
+//Pozyskiwanie produktu po id
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 
 router.get('/find/:id', async (req, res) => {
     try {
@@ -43,7 +99,28 @@ router.get('/find/:id', async (req, res) => {
     }
 })
 
+<<<<<<< HEAD
 //Pobieranie produktu z wyszukiwarki   
+=======
+// Pozyskiwanie produktu po nazwie
+
+router.get('/find/:name', async (req, res) => {
+    try {
+
+        const product = await Product.findOne({ title: req.params.name })
+
+        return res.status(200).json(product)
+
+
+    } catch (err) {
+
+        return res.status(500).json(err)
+    }
+})
+
+
+//Pozyskiwanie produktu z wyszukiwarki   
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 
 router.get('/search', async (req, res) => {
 
@@ -70,7 +147,11 @@ router.get('/search', async (req, res) => {
 
 
 
+<<<<<<< HEAD
 //Pozyskanie produktów
+=======
+//Pozyskanie wszystkich produktów
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38
 
 router.get('/', async (req, res) => {
     
@@ -340,5 +421,9 @@ router.get('/:gameId/price', async (req, res) => {
 
 
 
+<<<<<<< HEAD
 
 module.exports = router
+=======
+module.exports = router
+>>>>>>> 3cc8f15ce39ee0f2d31b38257696889a10811e38

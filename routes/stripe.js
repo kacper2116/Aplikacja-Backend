@@ -7,6 +7,22 @@ const User = require('../models/User')
 const { authenticateToken } = require('./authMiddleware')
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv')
+dotenv.config()
+
+//Konfiguracja transportera do wysyłania maili
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.wp.pl',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS,
+  }
+});
+
 
 //Funkcja sprawdzająca wartość zamówienia
 
@@ -214,6 +230,7 @@ router.post('/guest', async (req, res) => {
     const { paymentIntentId, products } = req.body;
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     const guestEmail = req.params.guestEmail
+    
 
     if (paymentIntent.status === 'succeeded') {
 
@@ -243,7 +260,7 @@ router.post('/guest', async (req, res) => {
             received:false,
           };
 
-          console.log(newProduct)
+         
 
           const digitalKey = await DigitalKey.findOne({
             gameId: product._id,
@@ -257,8 +274,7 @@ router.post('/guest', async (req, res) => {
           }
 
           newProduct.key = digitalKey.key;
-
-          console.log(newProduct._id)
+         
 
           await DigitalKey.updateOne(
             { _id: digitalKey._id },
@@ -330,9 +346,33 @@ router.post('/guest', async (req, res) => {
       newOrder.quantity = orderQuantity;
       newOrder.orderValue = orderValue;
 
+
       const savedOrder = await newOrder.save()
 
+      const keysToSend = newOrder.products.map(product => {
+        return `${product.title}: ${product.key}`;
+      }).join('\n');
+
+  
+      const mailOptions = {
+        from: 'bestgames',
+        to: guestEmail,
+        subject: 'Odbierz swój klucz - Best Games',
+        text: `Zamówienie nr: ${newOrder._id} \n ${keysToSend}`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+          restart.status(500).josn({success: false})
+        }  
+        console.log('E-mail wysłany: ' + info.response);
+      })
+
+      
       res.status(201).json({ success: true })
+
+      
     } else return res.status(201).json({success:false})
   } catch (error) {
     console.error(error)
